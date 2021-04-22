@@ -24,6 +24,12 @@ class Xumm
         add_action('wp_ajax_xumm_connect', [$this, 'xumm_connect']);
     }
 
+    /**
+     * Webhook. Called via /wp-json/xrparcade/v1/xumm (@see init_hooks()), by XUMM
+     * when a transaction is signed.
+     *
+     * @param WP_REST_Request $request
+     */
     public function webhook(WP_REST_Request $request): void
     {
         $payload = $request->get_json_params();
@@ -63,6 +69,12 @@ class Xumm
         delete_user_meta($userId, 'xumm_request_id');
     }
 
+    /**
+     * Sends a payment request to the given user id, by pushing
+     * it to their XUMM app, if they have it linked.
+     *
+     * @param int $userId WP user id
+     */
     public function send_payment_request($userId)
     {
         if (empty($userId)) {
@@ -84,9 +96,7 @@ class Xumm
             ],
         ];
 
-        $response = $this->send_payload($payload);
-
-        die(print_r($response, true));
+        $this->send_payload($payload);
     }
 
     /**
