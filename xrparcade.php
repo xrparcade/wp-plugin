@@ -1,0 +1,40 @@
+<?php
+declare(strict_types=1);
+/*
+Plugin Name: XRPArcade
+Description: Essentials for XRPArcade
+Author: Stefanos Demetriou
+Author URI: https://www.github.com/mougias
+*/
+
+if ( ! function_exists( 'add_action' ) ) {
+	header( 'Status: 403 Forbidden' );
+	header( 'HTTP/1.1 403 Forbidden' );
+	exit();
+}
+
+$active_plugins = apply_filters( 'active_plugins', get_option( 'active_plugins' ) );
+if (
+	!in_array('ultimate-member/ultimate-member.php', $active_plugins)
+	|| !in_array('newsletter/plugin.php', $active_plugins)
+) {
+	return;
+}
+
+if (!class_exists('Xumm')) {
+	require_once('xumm.class.php');
+}
+
+if (!class_exists('XummWidget')) {
+	require_once('xumm.widget.class.php');
+	
+	add_action('widgets_init', function() {
+		register_widget('XummWidget');
+	});
+}
+
+if (!class_exists('XRPArcadePlugin')) {
+	require_once('xrparcade.class.php');
+	$plugin = new XRPArcadePlugin();
+	$plugin->init_hooks();
+}
