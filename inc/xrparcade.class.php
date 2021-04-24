@@ -5,10 +5,7 @@ final class XRPArcadePlugin
 {
     private const SUPPORTERS_NEWSLETTER_LIST_ID = 2;
 
-    /**
-     * @var NewsletterLogger
-     */
-    private $logger;
+    private const LOGS_PATH = __DIR__ . '/logs/xrparcade.log';
 
     /**
      * @var Xumm
@@ -16,11 +13,10 @@ final class XRPArcadePlugin
     private $xumm;
 
     /**
-     * Constructor. Instantiates logger from newsletter plugin logger.
+     * Constructor. Instantiates new xumm client.
      */
     public function __construct()
     {
-        $this->logger = new NewsletterLogger(get_class());
         $this->xumm = new Xumm();
     }
 
@@ -39,9 +35,11 @@ final class XRPArcadePlugin
     /**
      * Hook called when the user updates their profile.
      *
+     * @param mixed[] $profile User profile.
+     *
      * @return void
      */
-	public function xrparcade_update_profile($profile): void
+	public function xrparcade_update_profile(array $profile): void
     {
         $userId = get_current_user_id();
         $signup = !empty($profile['newsletter'][0]);
@@ -67,7 +65,7 @@ final class XRPArcadePlugin
     private function xrparcade_update_newsletter_subscription($userId, $signup = null, $subscriptionEndDate = null): void
     {
         if (empty($userId)) {
-            $this->logger->fatal('xrparcade_update_newsletter_subscription called with empty user id');
+            error_log('xrparcade_update_newsletter_subscription called with empty user id', 3, self::LOGS_PATH);
             return;
         }
 
@@ -85,7 +83,8 @@ final class XRPArcadePlugin
         $newsletter = Newsletter::instance();
         $user = $newsletter->get_user_by_wp_user_id($userId);
         if (!$user) {
-            $this->logger->fatal('xrparcade_update_newsletter_subscription called with user id ' . $userId . ' but no respective newsletter user was found.');
+            error_log('xrparcade_update_newsletter_subscription called with user id ' . $userId . ' but no respective newsletter user was found.', 3, self::LOGS_PATH);
+
             return;
         }
 
@@ -99,7 +98,7 @@ final class XRPArcadePlugin
         $user = NewsletterSubscription::instance()->subscribe2( $subscription );
 
         if ($user instanceof WP_Error) {
-            $this->logger->fatal( 'Unable to modify user subscription for user id ' . $userId . ': ' . print_r($user->get_error_message()));
+            error_log('Unable to modify user subscription for user id ' . $userId . ': ' . print_r($user->get_error_message()), 3, self::LOGS_PATH);
         }
     }
 
