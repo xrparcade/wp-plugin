@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 final class XRPArcadePlugin
@@ -39,7 +40,7 @@ final class XRPArcadePlugin
      *
      * @return void
      */
-	public function xrparcade_update_profile(array $profile): void
+    public function xrparcade_update_profile(array $profile): void
     {
         $userId = get_current_user_id();
         $signup = !empty($profile['newsletter'][0]);
@@ -95,11 +96,10 @@ final class XRPArcadePlugin
         $subscription->if_exists = TNP_Subscription::EXISTING_MERGE;
         $subscription->data->lists['' . self::SUPPORTERS_NEWSLETTER_LIST_ID] =  ($signup && new DateTime($subscriptionEndDate) > new DateTime());
 
-        $user = NewsletterSubscription::instance()->subscribe2( $subscription );
+        $user = NewsletterSubscription::instance()->subscribe2($subscription);
 
         if ($user instanceof WP_Error) {
             error_log('Unable to modify user subscription for user id ' . $userId . ': ' . print_r($user->get_error_message()), 3, self::LOGS_PATH);
         }
     }
-
 }

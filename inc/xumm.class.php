@@ -42,7 +42,8 @@ class Xumm
         // we'll call back XUMM with the payload ID to get the details, instead
         // of relying on the received request body
         $response = $this->get_payload($payloadId);
-        if (empty($response)
+        if (
+            empty($response)
             || empty($response['meta'])
             || !$response['meta']['exists']
             || empty($response['application']['issued_user_token'])
