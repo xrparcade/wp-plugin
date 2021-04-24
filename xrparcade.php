@@ -22,11 +22,11 @@ if (
 }
 
 if (!class_exists('Xumm')) {
-	require_once('xumm.class.php');
+	require_once('inc/xumm.class.php');
 }
 
 if (!class_exists('XummWidget')) {
-	require_once('xumm.widget.class.php');
+	require_once('inc/xumm.widget.class.php');
 	
 	add_action('widgets_init', function() {
 		register_widget('XummWidget');
@@ -34,7 +34,7 @@ if (!class_exists('XummWidget')) {
 }
 
 if (!class_exists('XRPArcadePlugin')) {
-	require_once('xrparcade.class.php');
+	require_once('inc/xrparcade.class.php');
 	$plugin = new XRPArcadePlugin();
 	$plugin->init_hooks();
 }
