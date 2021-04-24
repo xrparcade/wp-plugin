@@ -11,9 +11,6 @@ class Xumm
      */
     public function init_hooks(): void
     {
-        // debug
-        ini_set('log_errors_max_len', '0');
-
         add_action('rest_api_init', function () {
             register_rest_route('xrparcade/v1', 'xumm', [
                 'methods' => 'POST',
