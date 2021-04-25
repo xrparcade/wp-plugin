@@ -51,12 +51,12 @@ register_deactivation_hook(__FILE__,'xrparcade_cron_deactivation');
 
 function xrparcade_cron_activation()
 {
-	if (!wp_next_scheduled('xrparcade_cron_hook')) {
-		wp_schedule_event(time(), 'daily', 'xrparcade_cron_hook');
+	if (!wp_next_scheduled('xrparcade_cron_payments')) {
+		wp_schedule_event(time(), 'daily', 'xrparcade_cron_payments');
 	}
 }
 
 function xrparcade_cron_deactivation()
 {
-	wp_clear_scheduled_hook('xrparcade_cron_hook');
+	wp_clear_scheduled_hook('xrparcade_cron_payments');
 }

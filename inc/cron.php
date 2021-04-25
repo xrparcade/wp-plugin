@@ -15,7 +15,7 @@ class XRPArcadeCron
 
     public function init_hooks()
     {
-        add_action('xrparcade_cron_hook', [$this, 'cron_exec']);
+        add_action('xrparcade_cron_payments', [$this, 'cron_exec']);
     }
 
     /**
