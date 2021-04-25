@@ -53,9 +53,6 @@ final class XRPArcadePlugin
         $signup = !empty($profile['newsletter'][0]);
 
         $this->xrparcade_update_newsletter_subscription($userId, $signup);
-        if ($userId == 2) {
-            $this->xumm->send_payment_request(2);
-        }
     }
 
     /**

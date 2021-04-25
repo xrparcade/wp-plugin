@@ -31,11 +31,6 @@ class XRPArcadeCron
                 continue;
             }
 
-            if ($user->id !== 2) {
-                // just me for debug
-                continue;
-            }
-    
             $this->process_user($user->id);
         }
     }
