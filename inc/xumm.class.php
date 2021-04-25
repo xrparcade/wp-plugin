@@ -5,69 +5,6 @@ declare(strict_types=1);
 class Xumm
 {
     /**
-     * Called to add the required class methods to WP hooks.
-     *
-     * @return void
-     */
-    public function init_hooks(): void
-    {
-        add_action('rest_api_init', function () {
-            register_rest_route('xrparcade/v1', 'xumm', [
-                'methods' => 'POST',
-                'callback' => [$this, 'webhook']
-            ]);
-        });
-
-        add_action('wp_ajax_xumm_connect', [$this, 'xumm_connect']);
-    }
-
-    /**
-     * Webhook. Called via /wp-json/xrparcade/v1/xumm (@see init_hooks()), by XUMM
-     * when a transaction is signed.
-     *
-     * @param WP_REST_Request $request
-     */
-    public function webhook(WP_REST_Request $request): void
-    {
-        $payload = $request->get_json_params();
-        if (empty($payload) || empty($payload['meta']['payload_uuidv4'])) {
-            return;
-        }
-
-        $payloadId = $payload['meta']['payload_uuidv4'];
-        // since the webhook is open and anyone can send whatever bs they want
-        // we'll call back XUMM with the payload ID to get the details, instead
-        // of relying on the received request body
-        $response = $this->get_payload($payloadId);
-        if (
-            empty($response)
-            || empty($response['meta'])
-            || !$response['meta']['exists']
-            || empty($response['application']['issued_user_token'])
-            || empty($response['response']['account'])
-        ) {
-            // yup, someone else called this with junk
-            return;
-        }
-
-        $token = $response['application']['issued_user_token'];
-        $account = $response['response']['account'];
-
-        $users = get_users([
-            'meta_key' => 'xumm_request_id',
-            'meta_value' => $payloadId,
-        ]);
-        if (count($users) !== 1) {
-            return;
-        }
-
-        $userId = $users[0]->id;
-        update_user_meta($userId, 'xumm_access_token', $token);
-        update_user_meta($userId, 'xumm_xrpl_account', $account);
-        delete_user_meta($userId, 'xumm_request_id');
-    }
-
-    /**
      * Sends a payment request to the given user id, by pushing
      * it to their XUMM app, if they have it linked.
      *
@@ -94,7 +31,10 @@ class Xumm
             ],
         ];
 
-        $this->send_payload($payload);
+        $data = $this->send_payload($payload);
+        if (!empty($data) && !empty($data['uuid'])) {
+            update_user_meta($userId, 'xumm_payment_request_id', $data['uuid']);
+        }
     }
 
     /**
@@ -119,7 +59,7 @@ class Xumm
             return;
         }
 
-        update_user_meta($userId, 'xumm_request_id', $response['uuid']);
+        update_user_meta($userId, 'xumm_signin_request_id', $response['uuid']);
         exit($response['next']['always']);
     }
 
@@ -131,7 +71,7 @@ class Xumm
      * @param mixed $payload The object to send.
      * @return array|null Array with response data or null if error.
      */
-    private function send_payload($payload): ?array
+    public function send_payload($payload): ?array
     {
         $payload = json_encode($payload);
 
@@ -162,7 +102,7 @@ class Xumm
      *
      * @return array|null Array with payload data, or null if error.
      */
-    private function get_payload($id): ?array
+    public function get_payload($id): ?array
     {
         if (empty($id)) {
             return null;

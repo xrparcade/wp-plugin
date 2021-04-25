@@ -30,7 +30,14 @@ final class XRPArcadePlugin
     {
         add_action('um_user_after_updating_profile', [$this, 'xrparcade_update_profile']);
 
-        $this->xumm->init_hooks();
+        add_action('rest_api_init', function () {
+            register_rest_route('xrparcade/v1', 'xumm', [
+                'methods' => 'POST',
+                'callback' => [$this, 'xumm_webhook']
+            ]);
+        });
+
+        add_action('wp_ajax_xumm_connect', [$this->xumm, 'xumm_connect']);
     }
 
     /**
@@ -51,6 +58,69 @@ final class XRPArcadePlugin
         }
     }
 
+    /**
+     * Webhook. Called via /wp-json/xrparcade/v1/xumm (@see init_hooks()), by XUMM
+     * when a transaction is signed.
+     *
+     * @param WP_REST_Request $request
+     */
+    public function xumm_webhook(WP_REST_Request $request): void
+    {
+        $payload = $request->get_json_params();
+        if (empty($payload) || empty($payload['meta']['payload_uuidv4'])) {
+            return;
+        }
+
+        $payloadId = $payload['meta']['payload_uuidv4'];
+        // since the webhook is open and anyone can send whatever bs they want
+        // we'll call back XUMM with the payload ID to get the details, instead
+        // of relying on the received request body
+        $response = $this->xumm->get_payload($payloadId);
+
+        if (
+            empty($response)
+            || empty($response['meta'])
+            || !$response['meta']['exists']
+            || empty($response['application']['issued_user_token'])
+            || empty($response['response']['account'])
+        ) {
+            // yup, someone else called this with junk
+            return;
+        }
+
+        $token = $response['application']['issued_user_token'];
+        $account = $response['response']['account'];
+
+        $users = get_users([
+            'meta_key' => 'xumm_signin_request_id',
+            'meta_value' => $payloadId,
+        ]);
+
+        // xumm sign-in
+        if (count($users) === 1) {
+            $userId = $users[0]->id;
+            update_user_meta($userId, 'xumm_access_token', $token);
+            update_user_meta($userId, 'xumm_xrpl_account', $account);
+            delete_user_meta($userId, 'xumm_signin_request_id');
+
+            return;
+        }
+
+        $users = get_users([
+            'meta_key' => 'xumm_payment_request_id',
+            'meta_value' => $payloadId,
+        ]);
+
+        // payment
+        if (count($users) === 1) {
+            $userId = $users[0]->id;
+            $subscriptionEndDate = (new Datetime())->add(new DateInterval('P7D'))->format('yy/m/d');
+            update_user_meta($userId, 'subscription_end_date', $subscriptionEndDate);
+            delete_user_meta($userId, 'xumm_payment_request_id');
+            
+            $this->xrparcade_update_newsletter_subscription($userId, null, $subscriptionEndDate);
+        }
+    }
 
     /**
      * Updates newsletter subscription and adds or remove the user to the newsletter list.
