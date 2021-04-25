@@ -39,3 +39,24 @@ if (!class_exists('XRPArcadePlugin')) {
 	$plugin = new XRPArcadePlugin();
 	$plugin->init_hooks();
 }
+
+if (!class_exists('XRPArcadeCron')) {
+	require_once('inc/cron.php');
+	$cron = new XRPArcadeCron();
+	$cron->init_hooks();
+}
+
+register_activation_hook(__FILE__,'xrparcade_cron_activation');
+register_deactivation_hook(__FILE__,'xrparcade_cron_deactivation');
+
+function xrparcade_cron_activation()
+{
+	if (!wp_next_scheduled('xrparcade_cron_hook')) {
+		wp_schedule_event(time(), 'daily', 'xrparcade_cron_hook');
+	}
+}
+
+function xrparcade_cron_deactivation()
+{
+	wp_clear_scheduled_hook('xrparcade_cron_hook');
+}
