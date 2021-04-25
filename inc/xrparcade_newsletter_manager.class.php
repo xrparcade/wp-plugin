@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-final class XRPArcadePlugin
+final class XRPArcadeNewsletterManager
 {
     private const SUPPORTERS_NEWSLETTER_LIST_ID = 2;
 
@@ -143,7 +143,7 @@ final class XRPArcadePlugin
      *
      * @return void
      */
-    private function xrparcade_update_newsletter_subscription($userId, $signup = null, $subscriptionEndDate = null): void
+    public function xrparcade_update_newsletter_subscription($userId, $signup = null, $subscriptionEndDate = null): void
     {
         if (empty($userId)) {
             error_log('xrparcade_update_newsletter_subscription called with empty user id', 3, self::LOGS_PATH);

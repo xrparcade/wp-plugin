@@ -1,6 +1,6 @@
 <?php
-
 declare(strict_types=1);
+
 /*
 Plugin Name: XRPArcade
 Description: Essentials for XRPArcade
@@ -34,10 +34,10 @@ if (!class_exists('XummWidget')) {
 	});
 }
 
-if (!class_exists('XRPArcadePlugin')) {
-	require_once('inc/xrparcade.class.php');
-	$plugin = new XRPArcadePlugin();
-	$plugin->init_hooks();
+if (!class_exists('XRPArcadeNewsletterManager')) {
+	require_once('inc/xrparcade_newsletter_manager.class.php');
+	$manager = new XRPArcadeNewsletterManager();
+	$manager->init_hooks();
 }
 
 if (!class_exists('XRPArcadeCron')) {

@@ -8,14 +8,38 @@ class XRPArcadeCron
      */
     private $xumm;
 
+    /**
+     * @var XRPArcadeNewsletterManager
+     */
+    private $manager;
+
     public function __construct()
     {
         $this->xumm = new Xumm();
+        $this->manager = new XRPArcadeNewsletterManager();
     }
 
     public function init_hooks()
     {
-        add_action('xrparcade_cron_payments', [$this, 'cron_exec']);
+        add_action('xrparcade_cron_newsletter_checkbox', [$this, 'newsletter_checkbox_cron_exec']);
+        add_action('xrparcade_cron_payments', [$this, 'payments_cron_exec']);
+    }
+
+    /**
+     * Loops through all the users and unchecks the newsletter checkbox for those
+     * whose subscription has ended
+     *
+     */
+    public function newsletter_checkbox_cron_exec(): void
+    {
+        $users = get_users();
+        foreach ($users as $user) {
+            if (empty($user) || !($user instanceof WP_User) || empty($user->id)) {
+                continue;
+            }
+
+            $this->process_user_for_newsletter_checkbox($user->id);
+        }
     }
 
     /**
@@ -23,7 +47,7 @@ class XRPArcadeCron
      * to those who are subscribed to our newsletter and their
      * subscription will soon expire
      */
-    public function cron_exec(): void
+    public function payments_cron_exec(): void
     {
         $users = get_users();
         foreach ($users as $user) {
@@ -72,5 +96,15 @@ class XRPArcadeCron
         // don't want to spam the user
         update_user_meta($userId, 'xumm_last_push_date', $today);
         $this->xumm->send_payment_request($userId);
+    }
+
+    private function process_user_for_newsletter_checkbox($userId)
+    {
+        $subscriptionEndDate = get_user_meta($userId, 'subscription_end_date', true);
+        $newsletter = get_user_meta($userId, 'newsletter', true);
+
+        if (!empty($newsletter) && new DateTime($subscriptionEndDate) < new DateTime()) {
+            delete_user_meta($userId, 'newsletter');
+        }
     }
 }
