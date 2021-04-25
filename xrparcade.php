@@ -54,9 +54,14 @@ function xrparcade_cron_activation()
 	if (!wp_next_scheduled('xrparcade_cron_payments')) {
 		wp_schedule_event(time(), 'daily', 'xrparcade_cron_payments');
 	}
+
+	if (!wp_next_scheduled('xrparcade_cron_newsletter_checkbox')) {
+		wp_schedule_event(time(), 'twicedaily', 'xrparcade_cron_newsletter_checkbox');
+	}
 }
 
 function xrparcade_cron_deactivation()
 {
 	wp_clear_scheduled_hook('xrparcade_cron_payments');
+	wp_clear_scheduled_hook('xrparcade_cron_newsletter_checkbox');
 }
