@@ -31,11 +31,11 @@ class XRPArcadeCron
                 continue;
             }
 
-            $this->process_user($user->id);
+            $this->process_user_for_payment($user->id);
         }
     }
 
-    private function process_user($userId)
+    private function process_user_for_payment($userId)
     {
         $today = new DateTime();
 

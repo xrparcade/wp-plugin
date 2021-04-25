@@ -52,7 +52,12 @@ final class XRPArcadePlugin
         $userId = get_current_user_id();
         $signup = !empty($profile['newsletter'][0]);
 
-        $this->xrparcade_update_newsletter_subscription($userId, $signup);
+        $subscriptionEndDate = get_user_meta($userId, 'subscription_end_date', true);
+        if (empty($subscriptionEndDate) || new DateTime($subscriptionEndDate) < new DateTime()) {
+            $this->xumm->send_payment_request($userId);
+        } else {
+            $this->xrparcade_update_newsletter_subscription($userId, $signup, $subscriptionEndDate);
+        }
     }
 
     /**
@@ -111,7 +116,15 @@ final class XRPArcadePlugin
         // payment
         if (count($users) === 1) {
             $userId = $users[0]->id;
-            $subscriptionEndDate = (new Datetime())->add(new DateInterval('P7D'))->format('yy/m/d');
+            $subscriptionEndDate = get_user_meta($userId, 'subscription_end_date', true);
+            $today = new DateTime();
+            // add 7 days to subscription, either from today, or from the end-date if the user still
+            // has remaining days.
+            if (empty($subscriptionEndDate) || new DateTime($subscriptionEndDate) < $today) {
+                $subscriptionEndDate = $today->add(new DateInterval('P7D'))->format('yy/m/d');
+            } else {
+                $subscriptionEndDate = (new DateTime($subscriptionEndDate))->add(new DateInterval('P7D'))->format('yy/m/d');
+            }
             update_user_meta($userId, 'subscription_end_date', $subscriptionEndDate);
             delete_user_meta($userId, 'xumm_payment_request_id');
             
