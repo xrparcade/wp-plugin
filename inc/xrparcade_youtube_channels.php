@@ -17,11 +17,11 @@ class XRPArcadeYoutubeChannels
         wp_enqueue_script('xrparcade_youtubers_js','/wp-content/plugins/xrparcade/js/xrparcade.youtubers.js', [], '0.1.0');
     }
 
-    public function youtubers_shortcode()
+    public function youtubers_shortcode(): string
     {
         $channels = $this->channels();
         if (empty($channels) || count($channels) == 1) {
-            return;
+            return null;
         }
 
         // first element is header
@@ -43,19 +43,21 @@ class XRPArcadeYoutubeChannels
             return $a[2] < $b[2] ? 1 : -1;
         });
 
-        echo '
+        $html = '
             <label>Youtuber:</label>
             <select id="youtuber-selection" name="youtuber-selection">
             ';
         foreach ($channels as $channel) {
-            echo '<option value="' . $channel[1] . '">' . $channel[0] . '</option>';
+            $html .= '<option value="' . $channel[1] . '">' . $channel[0] . '</option>';
         }
-        echo '</select>';
-        echo '
+        $html .= '</select>';
+        $html .= '
         <div id="xrparcade-youtuber">
         <iframe src="https://www.youtube.com/embed/?listType=playlist&list=' . $channels[0][1] . '" width="600" height="340"></iframe>
         </div>
         ';
+
+        return $html;
     }
 
     public function update_channels()
