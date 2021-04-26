@@ -105,6 +105,7 @@ class XRPArcadeCron
 
         if (!empty($newsletter) && new DateTime($subscriptionEndDate) < new DateTime()) {
             delete_user_meta($userId, 'newsletter');
+            $this->manager->xrparcade_update_newsletter_subscription($userId, false, $subscriptionEndDate);
         }
     }
 }
