@@ -14,14 +14,6 @@ if (!function_exists('add_action')) {
 	exit();
 }
 
-$active_plugins = apply_filters('active_plugins', get_option('active_plugins'));
-if (
-	!in_array('ultimate-member/ultimate-member.php', $active_plugins)
-	|| !in_array('newsletter/plugin.php', $active_plugins)
-) {
-	return;
-}
-
 require_once('inc/xumm.class.php');
 
 require_once('inc/xumm.widget.class.php');
