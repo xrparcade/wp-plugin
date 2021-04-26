@@ -22,33 +22,22 @@ if (
 	return;
 }
 
-if (!class_exists('Xumm')) {
-	require_once('inc/xumm.class.php');
-}
+require_once('inc/xumm.class.php');
 
-if (!class_exists('XummWidget')) {
-	require_once('inc/xumm.widget.class.php');
+require_once('inc/xumm.widget.class.php');
+add_action('widgets_init', function () {
+	register_widget('XummWidget');
+});
 
-	add_action('widgets_init', function () {
-		register_widget('XummWidget');
-	});
-}
+require_once('inc/xrparcade_newsletter_manager.class.php');
+$manager = new XRPArcadeNewsletterManager();
+$manager->init_hooks();
 
-if (!class_exists('XRPArcadeNewsletterManager')) {
-	require_once('inc/xrparcade_newsletter_manager.class.php');
-	$manager = new XRPArcadeNewsletterManager();
-	$manager->init_hooks();
-}
-
-if (!class_exists('XRPArcadeCron')) {
-	require_once('inc/cron.php');
-	$cron = new XRPArcadeCron();
-	$cron->init_hooks();
-}
+require_once('inc/cron.php');
+$cron = new XRPArcadeCron();
+$cron->init_hooks();
 
 register_activation_hook(__FILE__,'xrparcade_cron_activation');
-register_deactivation_hook(__FILE__,'xrparcade_cron_deactivation');
-
 function xrparcade_cron_activation()
 {
 	if (!wp_next_scheduled('xrparcade_cron_payments')) {
@@ -60,6 +49,7 @@ function xrparcade_cron_activation()
 	}
 }
 
+register_deactivation_hook(__FILE__,'xrparcade_cron_deactivation');
 function xrparcade_cron_deactivation()
 {
 	wp_clear_scheduled_hook('xrparcade_cron_payments');
