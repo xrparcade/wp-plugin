@@ -14,15 +14,15 @@ class XRPArcadeCron
     private $manager;
 
     /**
-     * @var XRPArcadeYoutubeChannelsUpdater
+     * @var XRPArcadeYoutubeChannels
      */
-    private $youtubersUpdater;
+    private $youtubers;
 
     public function __construct()
     {
         $this->xumm = new Xumm();
         $this->manager = new XRPArcadeNewsletterManager();
-        $this->youtubersUpdater = new XRPArcadeYoutubeChannelsUpdater();
+        $this->youtubers = new XRPArcadeYoutubeChannels();
     }
 
     public function init_hooks()
@@ -34,7 +34,7 @@ class XRPArcadeCron
 
     public function youtubers_cron_exec()
     {
-        $this->youtubersUpdater->update_channels();
+        $this->youtubers->update_channels();
     }
 
     /**

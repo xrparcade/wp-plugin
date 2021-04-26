@@ -25,7 +25,7 @@ require_once('inc/xrparcade_newsletter_manager.class.php');
 $manager = new XRPArcadeNewsletterManager();
 $manager->init_hooks();
 
-require_once('inc/xrparcade_youtube_channels_updater.php');
+require_once('inc/xrparcade_youtube_channels.php');
 
 require_once('inc/cron.php');
 $cron = new XRPArcadeCron();

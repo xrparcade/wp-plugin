@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-class XRPArcadeYoutubeChannelsUpdater
+class XRPArcadeYoutubeChannels
 {
     const API_URL = 'https://www.googleapis.com/youtube/v3/channels';
 
