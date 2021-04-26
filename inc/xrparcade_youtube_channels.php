@@ -7,6 +7,57 @@ class XRPArcadeYoutubeChannels
 
     const TABLE_POST_ID = 11396;
 
+    public function init_hooks() {
+        add_shortcode('xrparcade_youtubers', [$this, 'youtubers_shortcode']);
+        add_action('wp_enqueue_scripts', [$this, 'load_js']);
+    }
+
+    public function load_js()
+    {
+        wp_enqueue_script('xrparcade_youtubers_js','/wp-content/plugins/xrparcade/js/xrparcade.youtubers.js', [], '0.1.0');
+    }
+
+    public function youtubers_shortcode()
+    {
+        $channels = $this->channels();
+        if (empty($channels) || count($channels) == 1) {
+            return;
+        }
+
+        // first element is header
+        array_shift($channels);
+
+        $channels = array_filter($channels, function ($channel) {
+            return is_array($channel) && count($channel) == 3 && !empty($channel[0]) && !empty($channel[1]) && !empty($channel[2]);
+        });
+
+        // apparently Google prefixes UU for user uploads and UC for user channel
+        // but the remainding of the key is identical.
+        $channels = array_map(function ($channel) {
+            $channel[1] = 'UU' . substr($channel[1], 2);
+            
+            return $channel;
+        }, $channels);
+
+        usort($channels, function ($a, $b) {
+            return $a[2] < $b[2] ? 1 : -1;
+        });
+
+        echo '
+            <label>Youtuber:</label>
+            <select id="youtuber-selection" name="youtuber-selection">
+            ';
+        foreach ($channels as $channel) {
+            echo '<option value="' . $channel[1] . '">' . $channel[0] . '</option>';
+        }
+        echo '</select>';
+        echo '
+        <div id="xrparcade-youtuber">
+        <iframe src="https://www.youtube.com/embed/?listType=playlist&list=' . $channels[0][1] . '" width="600" height="340"></iframe>
+        </div>
+        ';
+    }
+
     public function update_channels()
     {
         $post = $this->get_youtubers_post();
