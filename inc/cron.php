@@ -13,16 +13,28 @@ class XRPArcadeCron
      */
     private $manager;
 
+    /**
+     * @var XRPArcadeYoutubeChannelsUpdater
+     */
+    private $youtubersUpdater;
+
     public function __construct()
     {
         $this->xumm = new Xumm();
         $this->manager = new XRPArcadeNewsletterManager();
+        $this->youtubersUpdater = new XRPArcadeYoutubeChannelsUpdater();
     }
 
     public function init_hooks()
     {
         add_action('xrparcade_cron_newsletter_checkbox', [$this, 'newsletter_checkbox_cron_exec']);
         add_action('xrparcade_cron_payments', [$this, 'payments_cron_exec']);
+        add_action('xrparcade_cron_youtubers', [$this, 'youtubers_cron_exec']);
+    }
+
+    public function youtubers_cron_exec()
+    {
+        $this->youtubersUpdater->update_channels();
     }
 
     /**

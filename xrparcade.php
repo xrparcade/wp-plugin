@@ -25,6 +25,8 @@ require_once('inc/xrparcade_newsletter_manager.class.php');
 $manager = new XRPArcadeNewsletterManager();
 $manager->init_hooks();
 
+require_once('inc/xrparcade_youtube_channels_updater.php');
+
 require_once('inc/cron.php');
 $cron = new XRPArcadeCron();
 $cron->init_hooks();
@@ -37,7 +39,11 @@ function xrparcade_cron_activation()
 	}
 
 	if (!wp_next_scheduled('xrparcade_cron_newsletter_checkbox')) {
-		wp_schedule_event(time(), 'twicedaily', 'xrparcade_cron_newsletter_checkbox');
+		wp_schedule_event(time() + 3600, 'twicedaily', 'xrparcade_cron_newsletter_checkbox');
+	}
+
+	if (!wp_next_scheduled('xrparcade_cron_youtubers')) {
+		wp_schedule_event(time() + 7200, 'daily', 'xrparcade_cron_youtubers');
 	}
 }
 
@@ -46,4 +52,6 @@ function xrparcade_cron_deactivation()
 {
 	wp_clear_scheduled_hook('xrparcade_cron_payments');
 	wp_clear_scheduled_hook('xrparcade_cron_newsletter_checkbox');
+	wp_clear_scheduled_hook('xrparcade_cron_youtubers');
 }
+
