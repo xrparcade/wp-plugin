@@ -8,17 +8,10 @@ class XummWidget extends WP_Widget
      */
     private $xummToken;
 
-    /**
-     * @var Xumm
-     */
-    private $xumm;
-
     function __construct()
     {
         $userId = get_current_user_id();
         $this->xummToken = get_user_meta($userId, 'xumm_access_token', true);
-
-        $this->xumm = new Xumm();
 
         parent::__construct('XummWidget', 'XUMM');
     }
