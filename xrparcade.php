@@ -36,17 +36,9 @@ $cron->init_hooks();
 register_activation_hook(__FILE__,'xrparcade_cron_activation');
 function xrparcade_cron_activation()
 {
-	if (!wp_next_scheduled('xrparcade_cron_payments')) {
-		wp_schedule_event(time(), 'daily', 'xrparcade_cron_payments');
-	}
-
-	if (!wp_next_scheduled('xrparcade_cron_newsletter_checkbox')) {
-		wp_schedule_event(time() + 3600, 'twicedaily', 'xrparcade_cron_newsletter_checkbox');
-	}
-
-	if (!wp_next_scheduled('xrparcade_cron_youtubers')) {
-		wp_schedule_event(time() + 7200, 'daily', 'xrparcade_cron_youtubers');
-	}
+	wp_schedule_event(time(), 'daily', 'xrparcade_cron_payments');
+	wp_schedule_event(time() + 3600, 'twicedaily', 'xrparcade_cron_newsletter_checkbox');
+	wp_schedule_event(time() + 7200, 'daily', 'xrparcade_cron_youtubers');
 }
 
 register_deactivation_hook(__FILE__,'xrparcade_cron_deactivation');
