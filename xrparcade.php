@@ -15,23 +15,18 @@ if (!function_exists('add_action')) {
 }
 
 require_once('inc/xumm.class.php');
-
 require_once('inc/xumm.widget.class.php');
-add_action('widgets_init', function () {
-	register_widget('XummWidget');
-});
-
 require_once('inc/xrparcade_newsletter_manager.class.php');
-$manager = new XRPArcadeNewsletterManager();
-$manager->init_hooks();
-
 require_once('inc/xrparcade_youtube_channels.php');
-$youtubers = new XRPArcadeYoutubeChannels();
-$youtubers->init_hooks();
-
 require_once('inc/cron.php');
-$cron = new XRPArcadeCron();
-$cron->init_hooks();
+require_once('inc/xumm_um_tab.class.php');
+
+(new XummWidget())->init_hooks();
+(new XRPArcadeNewsletterManager())->init_hooks();
+(new XRPArcadeYoutubeChannels())->init_hooks();
+(new XRPArcadeCron())->init_hooks();
+(new XummUMTab())->init_hooks();
+
 
 register_activation_hook(__FILE__,'xrparcade_cron_activation');
 function xrparcade_cron_activation()

@@ -16,6 +16,13 @@ class XummWidget extends WP_Widget
         parent::__construct('XummWidget', 'XUMM');
     }
 
+    function init_hooks()
+    {
+        add_action('widgets_init', function () {
+            register_widget('XummWidget');
+        });
+    }
+
     /**
      * Draws widget front-end
      */

@@ -1,0 +1,9 @@
+.xrp-icon:before {
+    background-image: url('/wp-content/plugins/xrparcade/images/icon-xrp.png');
+    background-size: 30px 30px;
+    display: inline-block;
+    width: 30px; 
+    height: 30px;
+    content: "";
+    filter: grayscale(1) invert(1);
+}
