@@ -50,10 +50,11 @@ final class XRPArcadeNewsletterManager
     public function xrparcade_update_profile(array $profile): void
     {
         $userId = get_current_user_id();
-        $signup = !empty($profile['newsletter'][0]);
+        $supporterSelection = (!empty($profile['supporter_selection'])) ? $profile['supporter_selection'] : null;
+        $signup = is_array($supporterSelection) && !empty($supporterSelection) && count($supporterSelection) == 1 && intval($supporterSelection[0]) !== 0;
 
         $subscriptionEndDate = get_user_meta($userId, 'subscription_end_date', true);
-        if (empty($subscriptionEndDate) || new DateTime($subscriptionEndDate) < new DateTime()) {
+        if ($signup && (empty($subscriptionEndDate) || new DateTime($subscriptionEndDate) < new DateTime())) {
             $this->xumm->send_payment_request($userId);
         } else {
             $this->xrparcade_update_newsletter_subscription($userId, $signup, $subscriptionEndDate);
@@ -121,9 +122,9 @@ final class XRPArcadeNewsletterManager
             // add 7 days to subscription, either from today, or from the end-date if the user still
             // has remaining days.
             if (empty($subscriptionEndDate) || new DateTime($subscriptionEndDate) < $today) {
-                $subscriptionEndDate = $today->add(new DateInterval('P7D'))->format('y/m/d');
+                $subscriptionEndDate = $today->add(new DateInterval('P7D'))->format('Y/m/d');
             } else {
-                $subscriptionEndDate = (new DateTime($subscriptionEndDate))->add(new DateInterval('P7D'))->format('y/m/d');
+                $subscriptionEndDate = (new DateTime($subscriptionEndDate))->add(new DateInterval('P7D'))->format('Y/m/d');
             }
             update_user_meta($userId, 'subscription_end_date', $subscriptionEndDate);
             delete_user_meta($userId, 'xumm_payment_request_id');
@@ -151,10 +152,10 @@ final class XRPArcadeNewsletterManager
         }
 
         if ($signup === null) {
-            // newsletter meta is an array, but we only have 1 newsletter for now
-            // if we add more newsletter in the future then we'll have to filter
-            // for array values.
-            $signup = count(get_user_meta($userId, 'newsletter', true)) === 1;
+            // any selection that starts with a number (e.g. "2 XRP Weekly") will be parsed
+            // to an int, and be considered as a signup
+            // Even though I'm using this I want to state that PHP I hate you for allowing this.
+             $signup = intval(get_user_meta($userId, 'supporter_selection', true)) !== 0;
         }
 
         if ($subscriptionEndDate === null) {

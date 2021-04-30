@@ -17,7 +17,10 @@ class Xumm
         }
         $token = get_user_meta($userId, 'xumm_access_token', true);
         $xrplAddress = get_user_meta($userId, 'xumm_xrpl_account', true);
-        if (empty($token) || empty($xrplAddress)) {
+        $supporterSelection = get_user_meta($userId, 'supporter_selection', true);
+        $signup = is_array($supporterSelection) && !empty($supporterSelection) && count($supporterSelection) == 1 && intval($supporterSelection[0]) >= 2;
+
+        if (empty($token) || empty($xrplAddress) || !$signup) {
             return;
         }
 
@@ -27,7 +30,7 @@ class Xumm
                 'Account' => $xrplAddress,
                 'TransactionType' => 'Payment',
                 'Destination' => XUMM_XRPARCADE_ADDRESS,
-                'Amount' => '' . XUMM_SUBSCRIPTION_WEEKLY_XRP_FEE * 1000000,
+                'Amount' => '' . intval($supporterSelection[0]) * 1000000,
             ],
         ];
 

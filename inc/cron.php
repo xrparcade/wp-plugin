@@ -87,7 +87,8 @@ class XRPArcadeCron
             return;
         }
 
-        $signup = count(get_user_meta($userId, 'newsletter', true)) === 1;
+        $supporterSelection = get_user_meta($userId, 'supporter_selection', true);
+        $signup = is_array($supporterSelection) && !empty($supporterSelection) && count($supporterSelection) == 1 && intval($supporterSelection[0]) !== 0;
         if (!$signup) {
             // user didn't sign up for our newsletter, so no need to request payment from them
             return;
@@ -113,10 +114,10 @@ class XRPArcadeCron
     private function process_user_for_newsletter_checkbox($userId)
     {
         $subscriptionEndDate = get_user_meta($userId, 'subscription_end_date', true);
-        $newsletter = get_user_meta($userId, 'newsletter', true);
-
-        if (!empty($newsletter) && new DateTime($subscriptionEndDate) < new DateTime()) {
-            delete_user_meta($userId, 'newsletter');
+        $supporterSelection = get_user_meta($userId, 'supporter_selection', true);
+        $signup = is_array($supporterSelection) && !empty($supporterSelection) && count($supporterSelection) == 1 && intval($supporterSelection[0]) !== 0;
+        if ($signup && new DateTime($subscriptionEndDate) < new DateTime()) {
+            delete_user_meta($userId, 'supporter_selection');
             $this->manager->xrparcade_update_newsletter_subscription($userId, false, $subscriptionEndDate);
         }
     }
