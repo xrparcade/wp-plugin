@@ -121,9 +121,9 @@ final class XRPArcadeNewsletterManager
             // add 7 days to subscription, either from today, or from the end-date if the user still
             // has remaining days.
             if (empty($subscriptionEndDate) || new DateTime($subscriptionEndDate) < $today) {
-                $subscriptionEndDate = $today->add(new DateInterval('P7D'))->format('yy/m/d');
+                $subscriptionEndDate = $today->add(new DateInterval('P7D'))->format('y/m/d');
             } else {
-                $subscriptionEndDate = (new DateTime($subscriptionEndDate))->add(new DateInterval('P7D'))->format('yy/m/d');
+                $subscriptionEndDate = (new DateTime($subscriptionEndDate))->add(new DateInterval('P7D'))->format('y/m/d');
             }
             update_user_meta($userId, 'subscription_end_date', $subscriptionEndDate);
             delete_user_meta($userId, 'xumm_payment_request_id');
