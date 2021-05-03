@@ -44,3 +44,9 @@ function xrparcade_cron_deactivation()
 	wp_clear_scheduled_hook('xrparcade_cron_youtubers');
 }
 
+add_action( 'wp_head', 'xrparcade_head', 5);
+function xrparcade_head()
+{
+	// preload um-gdpr
+	echo '<link rel="preload" href="' . plugins_url('/ultimate-member/assets/js/um-gdpr.min.js') .'" as="script">';
+}
