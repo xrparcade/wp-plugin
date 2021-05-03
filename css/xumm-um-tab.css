@@ -1,9 +1,14 @@
 .xrp-icon:before {
-    background-image: url('/wp-content/plugins/xrparcade/images/icon-xrp.png');
-    background-size: 30px 30px;
+    background-image: url('/wp-content/plugins/xrparcade/images/icon-xumm-um3.svg');
+    background-size: 60px 40px;
+    margin: -10px -30px;
     display: inline-block;
-    width: 30px; 
-    height: 30px;
+    width: 60px; 
+    height: 40px;
     content: "";
-    filter: grayscale(1) invert(1);
+}
+
+.xrp-icon {
+    width: 60px;
+    height: 40px;
 }

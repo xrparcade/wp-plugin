@@ -7,7 +7,7 @@ class XummUMTab
     {
         add_filter('um_profile_tabs', [$this, 'xumm_um_tab_add'], 10, 1);
         add_action('um_profile_content_xumm_default', [$this, 'xumm_um_tab_content'], 10, 1);
-        wp_enqueue_style('xrparcade_xumm_um_tab_css', '/wp-content/plugins/xrparcade/css/xumm-um-tab.css', [], '0.0.4');
+        wp_enqueue_style('xrparcade_xumm_um_tab_css', '/wp-content/plugins/xrparcade/css/xumm-um-tab.css', [], '0.0.18');
     }
 
     public function xumm_um_tab_add($tabs)
