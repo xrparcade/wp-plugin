@@ -71,7 +71,13 @@ class XRPArcadeCron
         }
     }
 
-    private function process_user_for_payment($userId)
+    /**
+     * Checks if a user should be sent a payment request
+     * and sends them if needed.
+     *
+     * @param int $userId wp user id
+     */
+    private function process_user_for_payment(int $userId)
     {
         $today = new DateTime();
 
