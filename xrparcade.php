@@ -20,13 +20,14 @@ require_once('inc/xrparcade_newsletter_manager.class.php');
 require_once('inc/xrparcade_youtube_channels.php');
 require_once('inc/cron.php');
 require_once('inc/xumm_um_tab.class.php');
+require_once('inc/xrparcade_newsletter_page.php');
 
 (new XummWidget())->init_hooks();
 (new XRPArcadeNewsletterManager())->init_hooks();
 (new XRPArcadeYoutubeChannels())->init_hooks();
 (new XRPArcadeCron())->init_hooks();
 (new XummUMTab())->init_hooks();
-
+(new XRPArcadeNewsletterPage())->init_hooks();
 
 register_activation_hook(__FILE__,'xrparcade_cron_activation');
 function xrparcade_cron_activation()
@@ -57,8 +58,17 @@ function xrparcade_exclude_newsletter_category(WP_Query $query)
 	if (is_admin() && !defined('DOING_AJAX')) {
 		return $query;
 	}
+	if (defined('XRPARCADE_NEWSLETTER_SHORTCODE') && XRPARCADE_NEWSLETTER_SHORTCODE) {
+		return $query;
+	}
 
-	// exclude newsletter category from all queries
+	// only affect queries for posts
+	$type = $query->get('post_type');
+    if($type !== 'post') {
+        return $query;
+	}
+
+	// exclude newsletter category (73)
 	$query->set('cat', '-73');
 
 	return $query;
