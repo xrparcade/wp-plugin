@@ -44,9 +44,29 @@ function xrparcade_cron_deactivation()
 	wp_clear_scheduled_hook('xrparcade_cron_youtubers');
 }
 
-add_action( 'wp_head', 'xrparcade_head', 5);
+add_action('wp_head', 'xrparcade_head', 5);
 function xrparcade_head()
 {
 	// preload um-gdpr
 	echo '<link rel="preload" href="' . plugins_url('/ultimate-member/assets/js/um-gdpr.min.js') .'" as="script">';
+}
+
+add_filter('pre_get_posts', 'xrparcade_exclude_newsletter_category');
+function xrparcade_exclude_newsletter_category(WP_Query $query)
+{
+	if (is_admin() && !defined('DOING_AJAX')) {
+		return $query;
+	}
+
+	// exclude newsletter category from all queries
+	$query->set('cat', '-73');
+
+	return $query;
+}
+
+add_action('save_post', 'xrparcade_newsletter_dont_send_push_notification', 0);
+function xrparcade_newsletter_dont_send_push_notification() {
+	if (isset($_POST['post_category']) && is_array($_POST['post_category']) && in_array(73, $_POST['post_category'])) {
+		unset($_POST['send_onesignal_notification']);
+	}
 }
