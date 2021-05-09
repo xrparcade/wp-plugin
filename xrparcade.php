@@ -64,8 +64,8 @@ function xrparcade_exclude_newsletter_category(WP_Query $query)
 
 	// only affect queries for posts
 	$type = $query->get('post_type');
-    if($type !== 'post') {
-        return $query;
+	if($type !== 'post') {
+		return $query;
 	}
 
 	// exclude newsletter category (73)
@@ -75,7 +75,8 @@ function xrparcade_exclude_newsletter_category(WP_Query $query)
 }
 
 add_action('save_post', 'xrparcade_newsletter_dont_send_push_notification', 0);
-function xrparcade_newsletter_dont_send_push_notification() {
+function xrparcade_newsletter_dont_send_push_notification()
+{
 	if (isset($_POST['post_category']) && is_array($_POST['post_category']) && in_array(73, $_POST['post_category'])) {
 		unset($_POST['send_onesignal_notification']);
 	}
