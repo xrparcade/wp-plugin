@@ -26,20 +26,23 @@ class XRPArcadeNewsletterPage
         while($query->have_posts()) {
             $query->the_post();
             $link = esc_url(get_permalink());
-
-            echo '<div class="newsletter-week" style="margin: 0 0 30px 0">';
-            echo '<div class="newsletter-photo" style="width: 40%; float: left; padding: 0 20px;">';
-            echo '<a href="' . $link . '">';
-            echo '<img src="' . get_the_post_thumbnail_url() . '" />';
-            echo '</a>';
-            echo '</div>';
-            echo '<div class="newsletter-details" style="width: 60%; float: left">';
-            echo '<a href="' . $link . '">';
-            echo '<h2>' . get_the_title() . '</h2>';
-            echo '</a>';
-            echo '<p style="text-align: justify">' . get_the_excerpt() . '</p>';
-            echo '</div>';
-            echo '</div>';
+?>
+            <div class="supporter-entry" style="margin: 0 0 30px 0; width: 100%; float: left">
+                <div class="supporter-entry-photo" style="width: 40%; float: left">
+                    <a href="<?php echo $link?>">
+                        <img src="<?php echo get_the_post_thumbnail_url()?>" style="padding: 0 20px" />
+                    </a>
+                </div>
+                <div class="supporter-entry-details" style="width: 60%; float: left">
+                    <a href="<?php echo $link?>">
+                        <h2><?php echo get_the_title()?></h2>
+                    </a>
+                    <p style="text-align: justify">
+                        <?php echo get_the_excerpt() ?>
+                    </p>
+                </div>
+            </div>
+<?php
         }
 
         previous_posts_link('&laquo; Newer');
@@ -67,7 +70,8 @@ class XRPArcadeNewsletterPage
         }
 
         global $post; 
-        $post = get_post(11549, OBJECT);
+        $post = get_post(11742, OBJECT);
+        $post->post_author = null;
         setup_postdata($post);        
     }
 
